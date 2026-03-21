@@ -3,7 +3,7 @@ import { HomePage } from "./HomePage";
 import { LoginPage } from "./LoginPage";
 import { AccountPage } from "./AccountPage";
 
-export class Pages {
+export class PagesManager {
   constructor(private readonly page: Page) {}
 
   private _homePage?: HomePage;
