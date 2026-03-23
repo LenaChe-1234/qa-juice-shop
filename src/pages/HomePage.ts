@@ -37,4 +37,19 @@ export class HomePage extends BasePage {
   async expectNoResultsFound(): Promise<void> {
     await expect(this.itemName).toBeHidden();
   }
+
+  private productCard(productName: string): Locator {
+    return this.page.locator("mat-card").filter({
+      has: this.page.getByText(productName, { exact: false }),
+    });
+  }
+
+  async addProductToBasket(productName: string): Promise<void> {
+    const card = this.productCard(productName);
+    await expect(card).toBeVisible();
+
+    const addButton = card.getByRole("button", { name: /add to basket/i });
+    await expect(addButton).toBeVisible();
+    await addButton.click();
+  }
 }

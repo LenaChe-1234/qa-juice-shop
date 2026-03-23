@@ -2,6 +2,7 @@ import { Page } from "@playwright/test";
 import { HomePage } from "./HomePage";
 import { LoginPage } from "./LoginPage";
 import { AccountPage } from "./AccountPage";
+import { BasketPage } from "./BasketPage";
 
 export class PagesManager {
   constructor(private readonly page: Page) {}
@@ -9,6 +10,7 @@ export class PagesManager {
   private _homePage?: HomePage;
   private _loginPage?: LoginPage;
   private _accountPage?: AccountPage;
+  private _basketPage?: BasketPage;
 
   get homePage(): HomePage {
     if (!this._homePage) {
@@ -29,5 +31,12 @@ export class PagesManager {
       this._accountPage = new AccountPage(this.page);
     }
     return this._accountPage;
+  }
+
+  get basketPage(): BasketPage {
+    if (!this._basketPage) {
+      this._basketPage = new BasketPage(this.page);
+    }
+    return this._basketPage;
   }
 }

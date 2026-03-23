@@ -6,6 +6,7 @@ export class Navbar {
   readonly accountButton: Locator;
   readonly searchButton: Locator;
   readonly searchInput: Locator;
+  readonly basketButton: Locator;
   accountMenu: Menu;
 
   constructor(page: Page) {
@@ -13,11 +14,19 @@ export class Navbar {
     this.accountButton = page.locator("#navbarAccount");
     this.searchButton = page.locator('[id="searchQuery"]');
     this.searchInput = page.getByRole("textbox");
+    this.basketButton = page.locator(
+      "button[aria-label*='Show the shopping cart'], button[aria-label*='shopping cart']",
+    );
     this.accountMenu = new Menu(page, this.accountButton);
   }
 
   async openSearch(): Promise<void> {
     await this.searchButton.click();
+  }
+
+  async openBasket(): Promise<void> {
+    await expect(this.basketButton).toBeVisible();
+    await this.basketButton.click();
   }
 
   async search(term: string): Promise<void> {
