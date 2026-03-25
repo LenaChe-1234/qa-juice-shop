@@ -1,25 +1,32 @@
 import { test as base } from "@playwright/test";
-import { PagesManager as Pages } from "../src/pages/PagesManager";
-import { AuthApi } from "../src/api/AuthApi";
+import { ApiServices } from "@src/api/services";
+import { HomePage } from "@src/pages/HomePage";
+import { LoginPage } from "@src/pages/LoginPage";
+import { BasketPage } from "@src/pages/BasketPage";
 
-type Fixtures = {
-  pages: Pages;
-  api: AuthApi;
+type Pages = {
+  homePage: HomePage;
+  loginPage: LoginPage;
+  basketPage: BasketPage;
 };
 
-export const test = base.extend<Fixtures>({
+type TestFixtures = {
+  pages: Pages;
+  api: ApiServices;
+};
+
+export const test = base.extend<TestFixtures>({
   pages: async ({ page }, use) => {
-    const pages = new Pages(page);
-    await use(pages);
+    await use({
+      homePage: new HomePage(page),
+      loginPage: new LoginPage(page),
+      basketPage: new BasketPage(page),
+    });
   },
+
   api: async ({ request }, use) => {
-    await use(new AuthApi(request));
+    await use(new ApiServices(request));
   },
 });
-
-// export const test = base.extend<Fixtures>({
-//   // Initialize AuthApi for each test
-
-// });
 
 export { expect } from "@playwright/test";

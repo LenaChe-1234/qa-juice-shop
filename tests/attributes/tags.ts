@@ -26,7 +26,17 @@ export class Tags {
     CRITICAL: "@critical",
   };
 
-  static join(...tags: Array<string | undefined | false>): string {
-    return tags.filter(Boolean).join(" ");
+  // static join(...tags: Array<string | undefined | false>): string {
+  //   return tags.filter(Boolean).join(" ");
+  // }
+  static getAllTags(): string[] {
+    const allTags = {
+      ...Tags.FEATURE,
+      ...Tags.TEST_TYPE,
+      ...Tags.PRIORITY,
+      ...Tags.SCENARIO,
+    };
+
+    return Object.values(allTags).map((tag) => tag.replace("@", ""));
   }
 }

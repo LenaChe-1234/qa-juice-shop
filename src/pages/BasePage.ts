@@ -1,13 +1,26 @@
-import { expect, Page } from "@playwright/test";
+import { Page } from "@playwright/test";
+import { step } from "@src/utils/step";
+import { WelcomeBanner } from "../modals/WelcomeBanner";
+import { CookieBanner } from "../modals/CookieBanner";
 
-export abstract class BasePage {
-  protected constructor(protected readonly page: Page) {}
+export class BasePage {
+  protected readonly page: Page;
+  readonly welcomeBanner: WelcomeBanner;
+  readonly cookieBanner: CookieBanner;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.welcomeBanner = new WelcomeBanner(page);
+    this.cookieBanner = new CookieBanner(page);
+  }
 
   async open(path: string): Promise<void> {
     await this.page.goto(path);
   }
 
-  async assertUrlContains(value: string | RegExp): Promise<void> {
-    await expect(this.page).toHaveURL(value);
+  @step("Dismiss blocking banners")
+  async dismissBlockingBanners(): Promise<void> {
+    await this.welcomeBanner.closeIfVisible();
+    await this.cookieBanner.closeIfVisible();
   }
 }

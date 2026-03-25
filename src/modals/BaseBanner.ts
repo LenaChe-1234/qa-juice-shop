@@ -1,24 +1,37 @@
 import { expect, Locator, Page } from "@playwright/test";
 
 export abstract class BaseBanner {
-  constructor(
-    protected page: Page,
-    protected container: Locator,
-  ) {}
+  constructor(protected readonly page: Page) {}
 
-  async closeIfVisible(closeButton: Locator): Promise<void> {
-    if (!(await this.container.isVisible())) return;
-
-    try {
-      await closeButton.click({ force: true, timeout: 2000 });
-      await this.container.waitFor({ state: "hidden", timeout: 2000 });
-    } catch (error) {
-      await this.forceRemove();
-    }
+  protected async isShown(locator: Locator): Promise<boolean> {
+    return await locator.isVisible().catch(() => false);
   }
 
-  private async forceRemove(): Promise<void> {
-    console.warn(`[Banner]: Forced removal of ${this.container}`);
-    await this.container.evaluate((node) => node.remove()).catch(() => {});
+  protected async waitUntilGone(
+    locator: Locator,
+    timeout = 5000,
+  ): Promise<void> {
+    try {
+      await locator.waitFor({ state: "hidden", timeout });
+      return;
+    } catch {}
+
+    try {
+      await locator.waitFor({ state: "detached", timeout });
+      return;
+    } catch {}
+
+    await expect(locator).not.toBeVisible({ timeout });
+  }
+
+  protected async clickAndWaitToDisappear(
+    button: Locator,
+    container: Locator,
+    timeout = 5000,
+  ): Promise<void> {
+    await expect(button).toBeVisible({ timeout });
+    await expect(button).toBeEnabled({ timeout });
+    await button.click();
+    await this.waitUntilGone(container, timeout);
   }
 }

@@ -1,10 +1,19 @@
 export const users = {
   validUser: {
-    email: "demo+qa@example.com",
-    password: "Passw0rd123!",
+    password: "Test1234!",
+    securityQuestion: {
+      id: 1,
+      answer: "test-answer",
+    },
   },
+
   invalidUser: {
-    email: "wrong@example.com",
+    email: "invalid-user@example.com",
     password: "wrong-password",
   },
-};
+
+  demoUser: {
+    email: "demo@juice-sh.op",
+    password: "demo123",
+  },
+} as const;

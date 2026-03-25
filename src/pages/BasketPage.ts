@@ -5,15 +5,19 @@ import { step } from "@src/utils/step";
 
 export class BasketPage extends BasePage {
   readonly navbar: Navbar;
+  readonly title: Locator;
 
   constructor(page: Page) {
     super(page);
     this.navbar = new Navbar(page);
+    this.title = this.page.getByRole("heading", { name: /basket/i });
   }
 
   @step("Verify basket page is loaded")
   async expectLoaded(): Promise<void> {
+    await this.dismissBlockingBanners();
     await expect(this.page).toHaveURL(/basket/i);
+    await expect(this.title).toBeVisible();
   }
 
   @step(
@@ -45,7 +49,7 @@ export class BasketPage extends BasePage {
   }
 
   @step("Verify basket is empty")
-  async expectBasketEmpty(): Promise<void> {
+  async expectBasketIsEmpty(): Promise<void> {
     await expect(this.page.locator("mat-row")).toHaveCount(0);
   }
 }
