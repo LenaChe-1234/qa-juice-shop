@@ -12,7 +12,7 @@ test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.AUTH, Tags.TEST_TYPE.
       password: users.validUser.password,
     };
 
-    await api.register(newUser);
+    await api.auth.register(newUser);
   });
 
   test(`${Tags.join(
@@ -24,7 +24,7 @@ test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.AUTH, Tags.TEST_TYPE.
   )} should login existing user`, async ({ pages }) => {
     await pages.homePage.open();
     await pages.loginPage.open();
-    await pages.loginPage.expectLoginPageLoaded();
+    await pages.loginPage.expectLoaded();
     await pages.loginPage.login(newUser.email, newUser.password);
     await pages.homePage.navbar.expectUserLoggedIn(newUser.email);
   });
@@ -37,6 +37,7 @@ test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.AUTH, Tags.TEST_TYPE.
   )} should login and then logout successfully`, async ({ pages }) => {
     await pages.homePage.open();
     await pages.loginPage.open();
+    await pages.loginPage.expectLoaded();
     await pages.loginPage.login(newUser.email, newUser.password);
     await pages.homePage.navbar.expectUserLoggedIn(newUser.email);
     await pages.homePage.navbar.logout();

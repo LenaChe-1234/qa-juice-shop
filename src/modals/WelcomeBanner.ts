@@ -1,27 +1,23 @@
-import { expect, Locator, Page } from "@playwright/test";
 import { step } from "@src/utils/step";
+import { BaseBanner } from "./BaseBanner";
 
-export class WelcomeBanner {
-  readonly page: Page;
-  readonly container: Locator;
-  readonly closeButton: Locator;
+export class WelcomeBanner extends BaseBanner {
+  readonly dialog = this.page.getByRole("dialog").filter({
+    has: this.page.locator("app-welcome-banner"),
+  });
 
-  constructor(page: Page) {
-    this.page = page;
-    this.container = page.getByRole("dialog").filter({ hasText: "Welcome" });
-    this.closeButton = page.locator('[aria-label="Close Welcome Banner"]');
-  }
+  readonly container = this.page.locator("app-welcome-banner");
 
+  readonly closeButton = this.page.getByLabel("Close Welcome Banner");
+
+  @step("Check whether welcome banner is visible")
   async isVisible(): Promise<boolean> {
-    return await this.container.isVisible().catch(() => false);
+    return await this.isShown(this.closeButton);
   }
 
   @step("Dismiss welcome banner if visible")
   async closeIfVisible(): Promise<void> {
     if (!(await this.isVisible())) return;
-
-    await expect(this.closeButton).toBeVisible({ timeout: 5000 });
-    await this.closeButton.click();
-    await expect(this.container).toBeHidden({ timeout: 5000 });
+    await this.clickAndWaitToDisappear(this.closeButton, this.dialog);
   }
 }

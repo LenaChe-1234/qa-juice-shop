@@ -1,0 +1,65 @@
+# Page snapshot
+
+```yaml
+- generic [active]:
+  - generic [ref=e4]:
+    - generic [ref=e7]:
+      - button "Open Sidenav" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]: menu
+      - button "Back to homepage" [ref=e12]:
+        - generic [ref=e14]:
+          - img "OWASP Juice Shop" [ref=e15]
+          - generic [ref=e16]: OWASP Juice Shop
+      - generic "Click to search" [ref=e19]:
+        - generic [ref=e20]:
+          - generic:
+            - generic:
+              - generic:
+                - textbox [disabled]
+        - generic:
+          - img [ref=e21]: close
+          - img [ref=e22]: search
+      - button "Show/hide account menu" [ref=e23]:
+        - img [ref=e24]: account_circle
+        - generic [ref=e25]: Account
+      - button "Language selection menu" [ref=e28]:
+        - img [ref=e29]: language
+        - generic [ref=e30]: EN
+    - generic [ref=e36]:
+      - heading "Login" [level=1] [ref=e37]
+      - generic [ref=e38]:
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - text: Email
+            - generic [ref=e43]: "*"
+          - textbox "Text field for the login email" [ref=e45]
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - text: Password
+            - generic [ref=e51]: "*"
+          - textbox "Text field for the login password" [ref=e53]
+          - button "Button to display the password" [ref=e55] [cursor=pointer]:
+            - img [ref=e56]: eye
+        - link "Forgot your password?" [ref=e61] [cursor=pointer]:
+          - /url: "#/forgot-password"
+        - button "Login" [disabled]:
+          - img: exit_to_app
+          - generic: Log in
+        - generic [ref=e63]:
+          - generic [ref=e64] [cursor=pointer]:
+            - checkbox "Checkbox to stay logged in or not logged in" [ref=e66]
+            - generic:
+              - img
+          - generic [ref=e67] [cursor=pointer]: Remember me
+        - generic [ref=e71]: or
+        - button "Login with Google" [ref=e74]:
+          - generic [ref=e75]:
+            - img [ref=e76]: google
+            - text: Log in with Google
+        - link "Not yet a customer?" [ref=e81] [cursor=pointer]:
+          - /url: "#/register"
+  - generic [ref=e89]:
+    - generic [ref=e90]: Language has been changed to English
+    - button "Force page reload" [ref=e92]:
+      - generic [ref=e93]: Force page reload
+```
