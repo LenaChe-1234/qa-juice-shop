@@ -1,23 +1,27 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BaseBanner } from "./BaseBanner";
+import { step } from "@src/utils/step";
 
-export class CookieBanner extends BaseBanner {
-  private dialog: Locator;
-  private acceptCookieButton: Locator;
+export class CookieBanner {
+  readonly page: Page;
+  readonly container: Locator;
+  readonly acceptButton: Locator;
 
   constructor(page: Page) {
-    const dialogLocator = page.getByLabel("cookieconsent");
-
-    super(page, dialogLocator);
-    this.dialog = dialogLocator;
-    this.acceptCookieButton = page.getByText("Me want it!");
+    this.page = page;
+    this.container = page.getByLabel("cookieconsent");
+    this.acceptButton = page.getByText("Me want it!", { exact: true });
   }
 
   async isVisible(): Promise<boolean> {
-    return await this.dialog.isVisible().catch(() => false);
+    return await this.container.isVisible().catch(() => false);
   }
 
-  async close() {
-    await this.closeIfVisible(this.acceptCookieButton);
+  @step("Dismiss cookie banner if visible")
+  async closeIfVisible(): Promise<void> {
+    if (!(await this.isVisible())) return;
+
+    await expect(this.acceptButton).toBeVisible({ timeout: 5000 });
+    await this.acceptButton.click();
+    await expect(this.container).toBeHidden({ timeout: 5000 });
   }
 }

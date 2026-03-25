@@ -24,22 +24,31 @@ export class HomePage extends BasePage {
   @step("Open home page")
   async open(): Promise<void> {
     await super.open("/");
-    await this.cookieBanner.close();
-    await this.welcomeBanner.close();
+    await this.cookieBanner.closeIfVisible();
+    await this.welcomeBanner.closeIfVisible();
+  }
+
+  @step("Dismiss blocking banners")
+  async dismissBlockingBanners(): Promise<void> {
+    await this.cookieBanner.closeIfVisible();
+    await this.welcomeBanner.closeIfVisible();
   }
 
   @step("Verify home page is loaded")
   async expectLoaded(): Promise<void> {
     await expect(this.page).toHaveTitle(/juice shop/i);
+    await this.dismissBlockingBanners();
   }
 
   @step((productName: string) => `Verify product is visible: ${productName}`)
   async expectProductVisible(productName: string): Promise<void> {
+    await this.dismissBlockingBanners();
     await expect(this.itemName).toContainText(productName);
   }
 
   @step("Verify no search results are displayed")
   async expectNoResultsFound(): Promise<void> {
+    await this.dismissBlockingBanners();
     await expect(this.itemName).toBeHidden();
   }
 
@@ -51,6 +60,8 @@ export class HomePage extends BasePage {
 
   @step((productName: string) => `Add product to basket: ${productName}`)
   async addProductToBasket(productName: string): Promise<void> {
+    await this.dismissBlockingBanners();
+
     const card = this.productCard(productName);
     await expect(card).toBeVisible();
 

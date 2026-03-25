@@ -1,7 +1,7 @@
 import { users } from "@src/data/users";
 import { TestData } from "@src/utils/TestData";
 import { test } from "../fixtures";
-import { Tags } from "@tests/attributes/tags";
+import { Tags } from "../attributes/tags";
 
 test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.AUTH, Tags.TEST_TYPE.REGRESSION)} Login UI`, () => {
   let newUser: { email: string; password: string };

@@ -12,9 +12,7 @@ export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.emailInput = page.getByLabel(/email/i);
-    this.passwordInput = page.locator(
-      'input[type="password"], input[formcontrolname="password"]',
-    );
+    this.passwordInput = page.getByLabel(/login password/i);
     this.loginButton = page
       .getByRole("button", { name: /log in|login/i })
       .first();

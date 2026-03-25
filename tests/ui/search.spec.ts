@@ -1,5 +1,5 @@
 import { test } from "../fixtures";
-import { Tags } from "@tests/attributes/tags";
+import { Tags } from "../attributes/tags";
 
 test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.SEARCH, Tags.TEST_TYPE.REGRESSION)} Search UI`, () => {
   test(`${Tags.join(
