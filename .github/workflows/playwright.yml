@@ -1,20 +1,65 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - ui
+          - api
+          - security
+          - smoke
+          - auth
+          - search
+          - basket
+      project:
+        description: "Browser"
+        required: true
+        default: "chromium"
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+      grep:
+        description: "Optional grep"
+        required: false
+        default: ""
+        type: string
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    env:
+      CI: "true"
+      BASE_URL: "http://localhost:3000"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: 24
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
@@ -22,16 +67,94 @@ jobs:
         run: docker compose up -d
 
       - name: Wait for Juice Shop
-
         run: |
-          timeout 60s bash -c 'until curl -f http://localhost:3000; do sleep 5; done'
+          timeout 90s bash -c 'until curl -f http://localhost:3000; do sleep 5; done'
 
-      - name: Run Playwright tests
-        run: npx playwright test
+      - name: Run selected tests
+        id: run_tests
+        shell: bash
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'all' }}"
+          PROJECT="${{ github.event.inputs.project || 'chromium' }}"
+          GREP="${{ github.event.inputs.grep || '' }}"
 
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+          CMD="npx playwright test"
+
+          if [ "$SUITE" = "ui" ]; then
+            CMD="$CMD tests/ui"
+          elif [ "$SUITE" = "api" ]; then
+            CMD="$CMD tests/api"
+          elif [ "$SUITE" = "security" ]; then
+            CMD="$CMD tests/security"
+          elif [ "$SUITE" = "smoke" ]; then
+            CMD="$CMD --grep @smoke"
+          elif [ "$SUITE" = "auth" ]; then
+            CMD="$CMD --grep @auth"
+          elif [ "$SUITE" = "search" ]; then
+            CMD="$CMD --grep @search"
+          elif [ "$SUITE" = "basket" ]; then
+            CMD="$CMD --grep @basket"
+          fi
+
+          if [ "$PROJECT" != "all" ]; then
+            CMD="$CMD --project=$PROJECT"
+          fi
+
+          if [ -n "$GREP" ]; then
+            CMD="$CMD --grep \"$GREP\""
+          fi
+
+          echo "Running command: $CMD"
+          eval "$CMD"
+
+      - name: Show report folders
+        if: always()
+        run: |
+          echo "==== root ===="
+          ls -la || true
+          echo "==== playwright-report ===="
+          ls -la playwright-report || true
+          echo "==== allure-results ===="
+          ls -la allure-results || true
+          echo "==== allure-report ===="
+          ls -la allure-report || true
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results 2>/dev/null)" ]; then
+            npx allure generate allure-results --clean -o allure-report
+          else
+            echo "No allure-results found, skipping Allure generation"
+          fi
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report
           path: playwright-report/
+          if-no-files-found: ignore
           retention-days: 30
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: allure-results
+          path: allure-results/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: allure-report
+          path: allure-report/
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v

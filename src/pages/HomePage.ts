@@ -3,6 +3,7 @@ import { BasePage } from "./BasePage";
 import { Navbar } from "../components/Navbar";
 import { WelcomeBanner } from "../modals/WelcomeBanner";
 import { CookieBanner } from "../modals/CookieBanner";
+import { step } from "@src/utils/step";
 
 export class HomePage extends BasePage {
   readonly navbar: Navbar;
@@ -20,20 +21,24 @@ export class HomePage extends BasePage {
     this.cookieBanner = new CookieBanner(page);
   }
 
+  @step("Open home page")
   async open(): Promise<void> {
     await super.open("/");
     await this.cookieBanner.close();
     await this.welcomeBanner.close();
   }
 
+  @step("Verify home page is loaded")
   async expectLoaded(): Promise<void> {
     await expect(this.page).toHaveTitle(/juice shop/i);
   }
 
+  @step((productName: string) => `Verify product is visible: ${productName}`)
   async expectProductVisible(productName: string): Promise<void> {
     await expect(this.itemName).toContainText(productName);
   }
 
+  @step("Verify no search results are displayed")
   async expectNoResultsFound(): Promise<void> {
     await expect(this.itemName).toBeHidden();
   }
@@ -44,6 +49,7 @@ export class HomePage extends BasePage {
     });
   }
 
+  @step((productName: string) => `Add product to basket: ${productName}`)
   async addProductToBasket(productName: string): Promise<void> {
     const card = this.productCard(productName);
     await expect(card).toBeVisible();

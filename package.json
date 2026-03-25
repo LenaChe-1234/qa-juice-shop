@@ -1,24 +1,39 @@
 {
   "name": "qa-juice-shop",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright automation project for OWASP Juice Shop",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "test:security": "playwright test tests/security",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:auth": "playwright test --grep @auth",
+    "test:search": "playwright test --grep @search",
+    "test:basket": "playwright test --grep @basket",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:allure": "playwright test --reporter=line,allure-playwright",
+    "allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
+    "allure:open": "allure open ./allure-report",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down -v"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LenaChe-1234/qa-juice-shop.git"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/LenaChe-1234/qa-juice-shop/issues"
-  },
-  "homepage": "https://github.com/LenaChe-1234/qa-juice-shop#readme",
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
+    "allure-commandline": "^2.34.1",
+    "allure-playwright": "^3.4.1",
     "dotenv": "^17.3.1",
     "typescript": "^5.9.3"
   }

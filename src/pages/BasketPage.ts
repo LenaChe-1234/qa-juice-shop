@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { Navbar } from "../components/Navbar";
+import { step } from "@src/utils/step";
 
 export class BasketPage extends BasePage {
   readonly navbar: Navbar;
@@ -10,10 +11,15 @@ export class BasketPage extends BasePage {
     this.navbar = new Navbar(page);
   }
 
+  @step("Verify basket page is loaded")
   async expectLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/basket/i);
   }
 
+  @step(
+    (productName: string) =>
+      `Verify product is present in basket: ${productName}`,
+  )
   async expectProductInBasket(productName: string): Promise<void> {
     await expect(this.basketRow(productName)).toBeVisible();
   }
@@ -26,6 +32,7 @@ export class BasketPage extends BasePage {
     });
   }
 
+  @step((productName: string) => `Remove product from basket: ${productName}`)
   async removeProduct(productName: string): Promise<void> {
     const row = this.basketRow(productName);
     await expect(row).toBeVisible();
@@ -37,38 +44,8 @@ export class BasketPage extends BasePage {
     await expect(row).toHaveCount(0);
   }
 
+  @step("Verify basket is empty")
   async expectBasketEmpty(): Promise<void> {
     await expect(this.page.locator("mat-row")).toHaveCount(0);
-  }
-
-  async expectProductQuantity(
-    productName: string,
-    quantity: number,
-  ): Promise<void> {
-    const row = this.basketRow(productName);
-    const quantityCell = row.locator("mat-cell.cdk-column-quantity");
-    await expect(quantityCell).toContainText(String(quantity));
-  }
-
-  async expectProductPrice(productName: string, price: string): Promise<void> {
-    const row = this.basketRow(productName);
-    const priceCell = row.locator("mat-cell.cdk-column-price");
-    await expect(priceCell).toContainText(price);
-  }
-
-  async increaseQuantity(productName: string): Promise<void> {
-    const row = this.basketRow(productName);
-    const plusButton = row
-      .locator("mat-cell.cdk-column-quantity button")
-      .last();
-    await plusButton.click();
-  }
-
-  async decreaseQuantity(productName: string): Promise<void> {
-    const row = this.basketRow(productName);
-    const minusButton = row
-      .locator("mat-cell.cdk-column-quantity button")
-      .first();
-    await minusButton.click();
   }
 }

@@ -1,19 +1,26 @@
-import { users } from "../../src/data/users";
-import { TestData } from "../../src/utils/TestData";
+import { users } from "@src/data/users";
+import { TestData } from "@src/utils/TestData";
 import { test } from "../fixtures";
+import { Tags } from "@tests/attributes/tags";
 
-test.describe("Basket UI", () => {
-  let newUser: any;
+test.describe(`${Tags.join(Tags.TEST_TYPE.UI, Tags.FEATURE.BASKET, Tags.TEST_TYPE.REGRESSION)} Basket UI`, () => {
+  let newUser: { email: string; password: string };
 
-  test.beforeEach(`register and login new user`, async ({ api }) => {
+  test.beforeEach("Register test user via API", async ({ api }) => {
     newUser = {
       email: TestData.getUniqueEmail(),
       password: users.validUser.password,
     };
-    const test = await api.register(newUser);
+
+    await api.register(newUser);
   });
 
-  test("should add product to basket and see it there", async ({ pages }) => {
+  test(`${Tags.join(
+    Tags.TEST_TYPE.UI,
+    Tags.FEATURE.BASKET,
+    Tags.TEST_TYPE.SMOKE,
+    Tags.SCENARIO.POSITIVE,
+  )} should add product to basket and see it there`, async ({ pages }) => {
     await pages.homePage.open();
     await pages.loginPage.open();
     await pages.loginPage.login(newUser.email, newUser.password);
@@ -26,7 +33,12 @@ test.describe("Basket UI", () => {
     await pages.basketPage.expectProductInBasket("Carrot Juice");
   });
 
-  test("should add and remove product to basket and see it empty", async ({
+  test(`${Tags.join(
+    Tags.TEST_TYPE.UI,
+    Tags.FEATURE.BASKET,
+    Tags.TEST_TYPE.REGRESSION,
+    Tags.SCENARIO.POSITIVE,
+  )} should add and remove product to basket and see it empty`, async ({
     pages,
   }) => {
     await pages.homePage.open();
