@@ -13,6 +13,7 @@ jobs:
       contents: read
     env:
       SLACK_CHANNEL_ID: ${{ vars.SLACK_CHANNEL_ID }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
     steps:
       - name: Checkout
@@ -104,7 +105,7 @@ jobs:
           retention-days: 7
 
       - name: Generate Slack message
-        if: ${{ always() && vars.SLACK_CHANNEL_ID != '' && secrets.SLACK_BOT_TOKEN != '' }}
+        if: ${{ always() && env.SLACK_CHANNEL_ID != '' && env.SLACK_BOT_TOKEN != '' }}
         id: slack_message
         shell: bash
         run: |
@@ -128,5 +129,3 @@ jobs:
         with:
           channel-id: ${{ vars.SLACK_CHANNEL_ID }}
           slack-message: ${{ steps.slack_message.outputs.message }}
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
