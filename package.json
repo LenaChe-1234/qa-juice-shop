@@ -15,7 +15,6 @@
     "test:basket": "playwright test --grep @basket",
     "test:chromium": "playwright test --project=chromium",
     "test:firefox": "playwright test --project=firefox",
-    "test:webkit": "playwright test --project=webkit",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:allure": "playwright test --reporter=line,allure-playwright",
