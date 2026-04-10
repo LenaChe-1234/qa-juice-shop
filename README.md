@@ -1,20 +1,23 @@
+![Tests](https://github.com/LenaChe-1234/qa-juice-shop/actions/workflows/playwright.yml/badge.svg)
+
 # qa-juice-shop
 
-Playwright automation project for OWASP Juice Shop with UI, API, and security test coverage.
+End-to-end Playwright automation framework for OWASP Juice Shop
+covering UI, API, and security-focused testing, with CI/CD and Allure reporting.
 
 ## Overview
 
 This repository contains a custom Playwright-based test framework for testing the Juice Shop application.
+It covers UI, API, and security-focused scenarios and includes reusable fixtures, service layers, tag-based filtering, and reporting support.
 
-The framework includes:
+## What this project demonstrates
 
-- UI tests built on Page Object classes
-- API tests built on reusable service clients
-- Security-oriented tests for vulnerable application behavior
-- Shared fixtures for pages and API services
-- Tag-based test filtering
-- Allure reporting support
-- Step decorators for readable execution logs
+- Building a Playwright + TypeScript automation framework from scratch
+- UI, API, and security-focused test design
+- Reusable page objects, components, modals, fixtures, and service layers
+- Docker-based local environment setup
+- GitHub Actions CI execution
+- Allure reporting and test result visualization
 
 ## Tech stack
 
@@ -110,7 +113,6 @@ npm run test:security
 ```bash
 npm run test:chromium
 npm run test:firefox
-npm run test:webkit
 ```
 
 ### Debugging commands
@@ -128,6 +130,35 @@ npm run test:auth
 npm run test:search
 npm run test:basket
 ```
+
+## Main test coverage
+
+The project currently includes three main groups of automated tests.
+
+### UI tests
+
+UI scenarios validate critical end-user flows in the browser:
+
+- [tests/ui/login.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/ui/login.spec.ts) login with a valid user and successful logout
+- [tests/ui/search.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/ui/search.spec.ts) product search and empty-state handling for missing results
+- [tests/ui/basket.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/ui/basket.spec.ts) add-to-basket flow, basket visibility, item removal, and empty basket checks
+
+### API tests
+
+API scenarios cover the main backend business flows:
+
+- [tests/api/auth.api.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/api/auth.api.spec.ts) successful login and rejection of invalid credentials
+- [tests/api/products.api.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/api/products.api.spec.ts) product catalog retrieval, positive search, and empty search results
+- [tests/api/basket.api.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/api/basket.api.spec.ts) authorized basket updates, unauthorized add attempts, and basket item retrieval
+
+### Security tests
+
+Security-oriented scenarios check common vulnerable areas in Juice Shop:
+
+- [tests/security/basket.security.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/security/basket.security.spec.ts) broken access control and IDOR checks around basket access and basket modification
+- [tests/security/xss.security.spec.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/security/xss.security.spec.ts) reflected payload handling in search API responses and script execution attempts in UI search
+
+The suite is organized with reusable tags from [tests/attributes/tags.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/attributes/tags.ts), which makes it possible to run smoke, auth, search, basket, UI, API, and security-focused subsets in local runs and in GitHub Actions.
 
 ## Test architecture
 
@@ -419,8 +450,33 @@ npm run allure:open
 ### Output directories
 
 - `allure-results` raw result files
-- `allure-report` generated HTML report
+- `allure-report` generated HTML report with dashboard, suite breakdown, and failure details
 - `test-results` Playwright output artifacts
+
+### Example Allure report views
+
+![Allure overview](./files/AllureOverview.jpg)
+![Allure test suites](./files/TestSuites.jpg)
+![Allure failed test details](./files/FailedTest.jpg)
+
+### Public report links
+
+CI and manual GitHub Actions runs can publish the generated HTML report to GitHub Pages, which makes it possible to open the report in a browser without downloading artifacts locally.
+
+Current public Pages URL:
+
+- [qa-juice-shop GitHub Pages report](https://lenache-1234.github.io/qa-juice-shop/)
+
+Where to find the published report link after a run:
+
+- in the `Deploy Published Report` job summary in GitHub Actions
+- in the Slack notification sent after the workflow finishes
+
+Current workflow behavior:
+
+- `CI Tests` publishes the generated Allure report when available
+- `Manual QA Tests` publishes the Playwright HTML report
+- if the expected report folder is missing, the workflow falls back to the available HTML report or a diagnostic page
 
 ## Recommended workflow for a new teammate
 

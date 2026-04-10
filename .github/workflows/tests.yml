@@ -1,10 +1,6 @@
-name: QA Tests
+name: Manual QA Tests
 
 on:
-  push:
-    branches: [main, master, develop]
-  pull_request:
-    branches: [main, master, develop]
   workflow_dispatch:
     inputs:
       suite:
@@ -39,124 +35,23 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/_run-tests.yml
     permissions:
       contents: read
-    env:
-      SLACK_CHANNEL_ID: ${{ vars.SLACK_CHANNEL_ID }}
-      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Start Juice Shop
-        run: docker compose up -d
-
-      - name: Wait for Juice Shop
-        run: |
-          timeout 90s bash -c 'until curl -f http://localhost:3000; do sleep 5; done'
-
-      - name: Run tests
-        id: run_tests
-        continue-on-error: true
-        env:
-          CI: true
-          BASE_URL: http://localhost:3000
-        shell: bash
-        run: |
-          set -o pipefail
-          npm test | tee test-results.txt
-
-      - name: Note test status
-        if: always()
-        run: |
-          if [ "${{ steps.run_tests.outcome }}" = "failure" ]; then
-            echo "⚠️ Test failures are allowed for this workflow and will not fail the job."
-          else
-            echo "✅ Tests completed without step-level failure."
-          fi
-
-      - name: Attach report links to workflow summary
-        if: always()
-        run: |
-          echo "[GitHub Actions Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> "$GITHUB_STEP_SUMMARY"
-          echo "Playwright HTML report is uploaded as artifact \`playwright-report\`." >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Collect test summary
-        if: always()
-        id: test_summary
-        shell: bash
-        run: |
-          extract_total() {
-            local label="$1"
-            local value
-            if [ ! -f test-results.txt ]; then
-              echo "0"
-              return
-            fi
-
-            value=$(grep -oE "[0-9]+ ${label}" test-results.txt | awk '{s+=$1} END {print s+0}')
-            echo "${value:-0}"
-          }
-
-          echo "passed=$(extract_total passed)" >> "$GITHUB_OUTPUT"
-          echo "failed=$(extract_total failed)" >> "$GITHUB_OUTPUT"
-          echo "skipped=$(extract_total skipped)" >> "$GITHUB_OUTPUT"
-          echo "flaky=$(extract_total flaky)" >> "$GITHUB_OUTPUT"
-
-      - name: Upload console test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: test-results
-          path: test-results.txt
-          retention-days: 7
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: playwright-report
-          path: playwright-report
-          retention-days: 7
-
-      - name: Generate Slack message
-        if: ${{ always() && env.SLACK_CHANNEL_ID != '' && env.SLACK_BOT_TOKEN != '' }}
-        id: slack_message
-        shell: bash
-        run: |
-          {
-            echo 'message<<EOF'
-            echo "*QA Tests* finished for \`${{ github.ref_name }}\`"
-            echo ""
-            echo ":white_check_mark: Passed: ${{ steps.test_summary.outputs.passed }}"
-            echo ":x: Failed: ${{ steps.test_summary.outputs.failed }}"
-            echo ":white_circle: Skipped: ${{ steps.test_summary.outputs.skipped }}"
-            echo ":large_blue_circle: Flaky: ${{ steps.test_summary.outputs.flaky }}"
-            echo ""
-            echo "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Open GitHub Actions run>"
-            echo "Artifact: \`playwright-report\`"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Notify in Slack
-        if: ${{ always() && steps.slack_message.outputs.message != '' }}
-        uses: slackapi/slack-github-action@v1.27.0
-        with:
-          channel-id: ${{ vars.SLACK_CHANNEL_ID }}
-          slack-message: ${{ steps.slack_message.outputs.message }}
+      pages: write
+      id-token: write
+    with:
+      suite: ${{ github.event.inputs.suite || 'all' }}
+      project: ${{ github.event.inputs.project || 'chromium' }}
+      grep: ${{ github.event.inputs.grep || '' }}
+      workflow-name: Manual QA Tests
+      node-version: "24"
+      timeout-minutes: 60
+      upload-allure: false
+      upload-console-results: true
+      publish-pages-report: true
+      pages-report-path: playwright-report
+      pages-report-name: Playwright report
+      notify-slack: true
+      stop-containers: true
+    secrets: inherit
