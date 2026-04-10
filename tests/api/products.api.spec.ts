@@ -1,33 +1,57 @@
 import { expect, test } from "../fixtures";
+import { Tags } from "../attributes/tags";
 
-test.describe("@api @products Products API", () => {
-  test("@smoke @positive should return products", async ({ api }) => {
-    const response = await api.products.getAll();
+test.describe("Products API", () => {
+  test(
+    "should return products",
+    {
+      tag: [
+        Tags.TEST_TYPE.API,
+        Tags.FEATURE.PRODUCTS,
+        Tags.TEST_TYPE.SMOKE,
+        Tags.SCENARIO.POSITIVE,
+      ],
+    },
+    async ({ api }) => {
+      const response = await api.products.getAll();
 
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
+      expect(response.ok()).toBeTruthy();
+      expect(response.status()).toBe(200);
 
-    const body = await response.json();
-    expect(Array.isArray(body.data)).toBeTruthy();
-    expect(body.data.length).toBeGreaterThan(0);
-  });
+      const body = await response.json();
+      expect(Array.isArray(body.data)).toBeTruthy();
+      expect(body.data.length).toBeGreaterThan(0);
+    },
+  );
 
-  test("@positive should find apple product in search", async ({ api }) => {
-    const response = await api.products.search("apple");
+  test(
+    "should find apple product in search",
+    {
+      tag: [Tags.TEST_TYPE.API, Tags.FEATURE.PRODUCTS, Tags.SCENARIO.POSITIVE],
+    },
+    async ({ api }) => {
+      const response = await api.products.search("apple");
 
-    expect(response.ok()).toBeTruthy();
-    const body = await response.json();
+      expect(response.ok()).toBeTruthy();
+      const body = await response.json();
 
-    expect(Array.isArray(body.data)).toBeTruthy();
-    expect(body.data.length).toBeGreaterThan(0);
-  });
+      expect(Array.isArray(body.data)).toBeTruthy();
+      expect(body.data.length).toBeGreaterThan(0);
+    },
+  );
 
-  test("@negative should return empty search result", async ({ api }) => {
-    const response = await api.products.search("zzzzzzzz-no-such-product");
+  test(
+    "should return empty search result",
+    {
+      tag: [Tags.TEST_TYPE.API, Tags.FEATURE.PRODUCTS, Tags.SCENARIO.NEGATIVE],
+    },
+    async ({ api }) => {
+      const response = await api.products.search("zzzzzzzz-no-such-product");
 
-    expect(response.ok()).toBeTruthy();
-    const body = await response.json();
+      expect(response.ok()).toBeTruthy();
+      const body = await response.json();
 
-    expect(body.data).toEqual([]);
-  });
+      expect(body.data).toEqual([]);
+    },
+  );
 });

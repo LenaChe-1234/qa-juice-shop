@@ -11,6 +11,9 @@ export class Tags {
     AUTH: "@auth",
     SEARCH: "@search",
     BASKET: "@basket",
+    PRODUCTS: "@products",
+    XSS: "@xss",
+    IDOR: "@idor",
     SESSION: "@session",
     HEADERS: "@headers",
     ACCESS_CONTROL: "@access-control",
@@ -26,9 +29,6 @@ export class Tags {
     CRITICAL: "@critical",
   };
 
-  // static join(...tags: Array<string | undefined | false>): string {
-  //   return tags.filter(Boolean).join(" ");
-  // }
   static getAllTags(): string[] {
     const allTags = {
       ...Tags.FEATURE,

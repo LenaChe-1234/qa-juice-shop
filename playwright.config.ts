@@ -1,10 +1,20 @@
 import { defineConfig, devices } from '@playwright/test';
+import { env } from './src/utils/env';
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const tagsFilterPattern = env.tagsFilter.length
+  ? new RegExp(env.tagsFilter.map(escapeRegExp).join('|'))
+  : undefined;
 
 export default defineConfig({
   testDir: './tests',
+  grep: tagsFilterPattern,
 
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: env.baseUrl,
     headless: true,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

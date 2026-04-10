@@ -32,7 +32,7 @@ test.describe(`Login UI`, () => {
   test(
     `should login and then logout successfully`,
     {
-      tag: [Tags.TEST_TYPE.API, Tags.FEATURE.AUTH],
+      tag: [Tags.TEST_TYPE.UI, Tags.FEATURE.AUTH],
     },
     async ({ pages }) => {
       await pages.homePage.open();

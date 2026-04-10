@@ -1,29 +1,47 @@
 import { expect, test } from "../fixtures";
+import { Tags } from "../attributes/tags";
 
-test.describe("@api @auth Auth API", () => {
+test.describe("Auth API", () => {
   let user: { email: string; password: string };
 
   test.beforeAll("Create user via API", async ({ api }) => {
     user = await api.auth.createTestUser();
   });
 
-  test("@smoke @positive should login existing user", async ({ api }) => {
-    const response = await api.auth.login(user.email, user.password);
+  test(
+    "should login existing user",
+    {
+      tag: [
+        Tags.TEST_TYPE.API,
+        Tags.FEATURE.AUTH,
+        Tags.TEST_TYPE.SMOKE,
+        Tags.SCENARIO.POSITIVE,
+      ],
+    },
+    async ({ api }) => {
+      const response = await api.auth.login(user.email, user.password);
 
-    expect(response.status()).toBe(200);
+      expect(response.status()).toBe(200);
 
-    const body = await response.json();
-    expect(body.authentication).toBeDefined();
-    expect(body.token || body.authentication.token).toBeTruthy();
-  });
+      const body = await response.json();
+      expect(body.authentication).toBeDefined();
+      expect(body.token || body.authentication.token).toBeTruthy();
+    },
+  );
 
-  test("@negative should not login with invalid password", async ({ api }) => {
-    const response = await api.auth.login(user.email, "wrong-password");
-    const status = response.status();
+  test(
+    "should not login with invalid password",
+    {
+      tag: [Tags.TEST_TYPE.API, Tags.FEATURE.AUTH, Tags.SCENARIO.NEGATIVE],
+    },
+    async ({ api }) => {
+      const response = await api.auth.login(user.email, "wrong-password");
+      const status = response.status();
 
-    expect(
-      [400, 401].includes(status),
-      `Expected 400 or 401, but got ${status}`,
-    ).toBeTruthy();
-  });
+      expect(
+        [400, 401].includes(status),
+        `Expected 400 or 401, but got ${status}`,
+      ).toBeTruthy();
+    },
+  );
 });
