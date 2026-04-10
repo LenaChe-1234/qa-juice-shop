@@ -5,6 +5,37 @@ on:
     branches: [main, master, develop]
   pull_request:
     branches: [main, master, develop]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - ui
+          - api
+          - security
+          - smoke
+          - auth
+          - search
+          - basket
+      project:
+        description: "Browser"
+        required: true
+        default: "chromium"
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+      grep:
+        description: "Optional grep"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   test:
