@@ -34,6 +34,6 @@ export default defineConfig({
 
   reporter: [
     ['list'],
-    ['allure-playwright', { resultsDir: 'allure-results' }],
+    ['html', { open: 'never' }],
   ],
 });
