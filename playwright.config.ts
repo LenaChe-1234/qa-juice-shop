@@ -12,9 +12,15 @@ const tagsFilterPattern = env.tagsFilter.length
 export default defineConfig({
   testDir: './tests',
   grep: tagsFilterPattern,
+  workers: 2,
+  timeout: 120000,
+  expect: {
+    timeout: 30000,
+  },
 
   use: {
     baseURL: env.baseUrl,
+    actionTimeout: 30000,
     headless: true,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
