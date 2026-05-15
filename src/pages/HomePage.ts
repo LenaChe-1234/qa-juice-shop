@@ -12,7 +12,7 @@ export class HomePage extends BasePage {
     super(page);
     this.navbar = new Navbar(page);
     this.pageTitle = page.locator("body");
-    this.itemName = page.locator(".info-box .item-name");
+    this.itemName = page.locator(".info-box .name");
   }
 
   @step("Open home page")
