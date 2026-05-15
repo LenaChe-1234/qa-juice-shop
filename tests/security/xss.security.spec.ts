@@ -14,7 +14,7 @@ test.describe("Input Validation", () => {
       ],
     },
     async ({ api }) => {
-      const payload = `<script>alert('xss')</script>`;
+      const payload = `<script>alert(1)</script>`;
       const response = await api.products.search(payload);
       const rawBody = await response.text();
 
@@ -55,7 +55,16 @@ test.describe("Input Validation", () => {
 
       await pages.homePage.open();
       await pages.homePage.expectLoaded();
+
+      const searchResponsePromise = page.waitForResponse((response) => {
+        return (
+          response.url().includes("/rest/products/search") &&
+          response.request().method() === "GET"
+        );
+      });
+
       await pages.homePage.navbar.search(payload);
+      await searchResponsePromise;
       await pages.homePage.expectNoResultsFound();
 
       const dialogErrorMessage = [
