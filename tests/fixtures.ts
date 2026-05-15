@@ -1,27 +1,15 @@
 import { test as base } from "@playwright/test";
 import { ApiServices } from "@src/api/services";
-import { HomePage } from "@src/pages/HomePage";
-import { LoginPage } from "@src/pages/LoginPage";
-import { BasketPage } from "@src/pages/BasketPage";
-
-type Pages = {
-  homePage: HomePage;
-  loginPage: LoginPage;
-  basketPage: BasketPage;
-};
+import { PagesManager } from "@src/pages/PagesManager";
 
 type TestFixtures = {
-  pages: Pages;
+  pages: PagesManager;
   api: ApiServices;
 };
 
 export const test = base.extend<TestFixtures>({
   pages: async ({ page }, use) => {
-    await use({
-      homePage: new HomePage(page),
-      loginPage: new LoginPage(page),
-      basketPage: new BasketPage(page),
-    });
+    await use(new PagesManager(page));
   },
 
   api: async ({ request }, use) => {

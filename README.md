@@ -177,7 +177,7 @@ Custom fixtures are defined in [tests/fixtures.ts](/Users/lena/Documents/Securit
 
 ### Available fixtures
 
-- `pages` access to prepared page object instances
+- `pages` access to page objects through `PagesManager`
 - `api` access to grouped API service instances
 - `expect` re-exported Playwright assertions
 
@@ -192,11 +192,7 @@ test("should open home page", async ({ pages }) => {
 });
 ```
 
-The current `pages` fixture exposes:
-
-- `homePage`
-- `loginPage`
-- `basketPage`
+The `pages` fixture is backed by [src/pages/PagesManager.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/src/pages/PagesManager.ts). Add new page objects there so tests can use them through `pages` without importing each page class in [tests/fixtures.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/tests/fixtures.ts).
 
 The current `api` fixture exposes:
 
@@ -282,6 +278,7 @@ Page objects live in [src/pages](/Users/lena/Documents/SecurityTesting/worksaces
 - keep selectors inside page object or component classes
 - expose business-readable methods such as `open`, `login`, `search`, `addProductToBasket`
 - reuse common behavior through a base class such as [src/pages/BasePage.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/src/pages/BasePage.ts)
+- expose new page objects through [src/pages/PagesManager.ts](/Users/lena/Documents/SecurityTesting/worksaces/qa-juice-shop/src/pages/PagesManager.ts) instead of importing them directly in fixtures
 - move banner or modal logic out of tests and into reusable objects
 
 ## API services
@@ -502,6 +499,7 @@ Current workflow behavior:
 Add new code in the layer that matches its purpose:
 
 - add a new page flow to `src/pages`
+- expose a new page object through `src/pages/PagesManager.ts`
 - add a reusable widget to `src/components`
 - add a modal or banner helper to `src/modals`
 - add a new API area to `src/api/services`
